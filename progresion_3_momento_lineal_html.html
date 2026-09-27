@@ -1,0 +1,1795 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Progresión 3: Momento Lineal y Cantidad de Movimiento</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --primary-light: #dbeafe;
+      --secondary: #0891b2;
+      --accent: #f59e0b;
+      --bg-main: #f8fafc;
+      --card-bg: #ffffff;
+      --text-main: #0f172a;
+      --text-muted: #475569;
+      --border: #cbd5e1;
+      --success: #16a34a;
+      --success-bg: #dcfce7;
+      --error: #dc2626;
+      --error-bg: #fee2e2;
+      --warning: #d97706;
+      --warning-bg: #fef3c7;
+      --radius: 12px;
+      --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: var(--bg-main);
+      color: var(--text-main);
+      line-height: 1.5;
+      padding-bottom: 24px;
+      max-width: 640px;
+      margin: 0 auto;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      padding: 12px 16px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+
+    .app-title-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .app-badge {
+      background: var(--primary-light);
+      color: var(--primary-dark);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .user-info-tag {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      max-width: 200px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      height: 8px;
+      background: #e2e8f0;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--secondary));
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .step-indicator {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 6px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .step-indicator span.active {
+      color: var(--primary-dark);
+      font-weight: 800;
+    }
+
+    main {
+      padding: 16px;
+      flex: 1;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 18px;
+      margin-bottom: 16px;
+      box-shadow: var(--shadow);
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--primary-dark);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-subtitle {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 12px;
+    }
+
+    p {
+      margin-bottom: 12px;
+      font-size: 0.95rem;
+      color: #334155;
+    }
+
+    .highlight-box {
+      background: var(--primary-light);
+      border-left: 4px solid var(--primary);
+      padding: 12px;
+      border-radius: 0 8px 8px 0;
+      margin: 12px 0;
+      font-size: 0.9rem;
+    }
+
+    .teacher-pause-card {
+      background: #fefce8;
+      border: 2px dashed #eab308;
+      border-radius: var(--radius);
+      padding: 16px;
+      margin: 16px 0;
+    }
+
+    .teacher-pause-title {
+      font-weight: 800;
+      color: #854d0e;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      min-height: 48px;
+      padding: 12px 20px;
+      font-size: 1rem;
+      font-weight: 700;
+      border-radius: var(--radius);
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2);
+      user-select: none;
+    }
+
+    .btn:hover {
+      background: var(--primary-dark);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      background: #64748b;
+      box-shadow: none;
+    }
+
+    .btn-secondary:hover {
+      background: #475569;
+    }
+
+    .btn-accent {
+      background: var(--accent);
+      color: #0f172a;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 2px solid var(--primary);
+      color: var(--primary);
+      box-shadow: none;
+    }
+
+    .btn-disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      pointer-events: none;
+    }
+
+    .input-group {
+      margin-bottom: 14px;
+    }
+
+    .input-label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .input-control {
+      width: 100%;
+      min-height: 48px;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      background: #ffffff;
+      outline: none;
+    }
+
+    .input-control:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px var(--primary-light);
+    }
+
+    .sim-canvas-container {
+      width: 100%;
+      background: #0f172a;
+      border-radius: 8px;
+      overflow: hidden;
+      margin: 12px 0;
+      position: relative;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 180px;
+    }
+
+    .controls-panel {
+      background: #f1f5f9;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .slider-row label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      min-width: 90px;
+    }
+
+    .slider-row input[type="range"] {
+      flex: 1;
+      height: 8px;
+      border-radius: 4px;
+    }
+
+    .val-badge {
+      background: #ffffff;
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      font-weight: 700;
+      font-size: 0.85rem;
+      min-width: 60px;
+      text-align: center;
+    }
+
+    .feedback-box {
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 12px;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+
+    .feedback-box.success {
+      background: var(--success-bg);
+      color: #14532d;
+      border: 1px solid #bbf7d0;
+    }
+
+    .feedback-box.error {
+      background: var(--error-bg);
+      color: #7f1d1d;
+      border: 1px solid #fecaca;
+    }
+
+    .feedback-box.warning {
+      background: var(--warning-bg);
+      color: #78350f;
+      border: 1px solid #fde68a;
+    }
+
+    /* Concept Map Word Bank */
+    .word-bank {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 12px;
+      background: #f1f5f9;
+      border-radius: 8px;
+      margin-bottom: 14px;
+      min-height: 60px;
+    }
+
+    .word-chip {
+      background: #ffffff;
+      border: 1px solid var(--primary);
+      color: var(--primary-dark);
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      min-height: 36px;
+      display: flex;
+      align-items: center;
+    }
+
+    .word-chip.selected {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .map-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .map-node {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px;
+      font-size: 0.88rem;
+    }
+
+    .drop-slot {
+      display: inline-block;
+      min-width: 110px;
+      min-height: 32px;
+      border: 2px dashed var(--primary);
+      border-radius: 6px;
+      background: #f8fafc;
+      vertical-align: middle;
+      text-align: center;
+      line-height: 28px;
+      font-weight: 700;
+      color: var(--primary-dark);
+      padding: 0 8px;
+      margin: 2px 4px;
+      cursor: pointer;
+    }
+
+    .drop-slot.filled {
+      border-style: solid;
+      background: var(--primary-light);
+    }
+
+    .drop-slot.correct {
+      border-color: var(--success);
+      background: var(--success-bg);
+      color: #14532d;
+    }
+
+    .drop-slot.incorrect {
+      border-color: var(--error);
+      background: var(--error-bg);
+      color: #7f1d1d;
+    }
+
+    /* Quiz styling */
+    .quiz-option {
+      background: #ffffff;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      margin-bottom: 8px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.92rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 48px;
+    }
+
+    .quiz-option.selected {
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary-dark);
+    }
+
+    .quiz-nav-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 14px;
+    }
+
+    .quiz-chip {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .quiz-chip.active {
+      border-color: var(--primary);
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .quiz-chip.answered {
+      background: #e2e8f0;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="app-title-bar">
+      <span class="app-badge">Física • Bachillerato</span>
+      <span class="user-info-tag" id="header-user-tag">Sin identificar</span>
+    </div>
+    <div class="progress-bar-container">
+      <div class="progress-bar-fill" id="main-progress-bar"></div>
+    </div>
+    <div class="step-indicator" id="step-indicator">
+      <span id="ind-0">Inicio</span>
+      <span id="ind-1">1.Enganchar</span>
+      <span id="ind-2">2.Explorar</span>
+      <span id="ind-3">3.Explicar</span>
+      <span id="ind-4">4.Elaborar</span>
+      <span id="ind-5">5.Evaluar</span>
+    </div>
+  </header>
+
+  <!-- CONTENEDOR PRINCIPAL DINÁMICO -->
+  <main id="app-content"></main>
+
+  <script>
+    const DATA = {
+      quiz: [
+        {
+          q: "¿Cuál es la definición matemática del momento lineal (p)?",
+          opts: ["p = m / v", "p = m · v", "p = m + v", "p = F · t"],
+          ans: 1,
+          tag: "Definición de Momento Lineal",
+          exp: "El momento lineal se define como el producto de la masa por la velocidad (p = m·v)."
+        },
+        {
+          q: "¿En qué unidad del Sistema Internacional (SI) se mide el momento lineal?",
+          opts: ["Joules (J)", "Newtons (N)", "kg · m/s", "m/s²"],
+          ans: 2,
+          tag: "Unidades del SI",
+          exp: "La masa se expresa en kg y la velocidad en m/s, por lo que el momento lineal se mide en kg·m/s."
+        },
+        {
+          q: "¿Por qué el momento lineal es una cantidad vectorial?",
+          opts: [
+            "Porque solo importa la masa",
+            "Porque depende de la velocidad, que tiene dirección y sentido",
+            "Porque siempre es un número positivo",
+            "Porque no depende del marco de referencia"
+          ],
+          ans: 1,
+          tag: "Carácter Vectorial",
+          exp: "El momento lineal hereda la dirección y el sentido de la velocidad, siendo una magnitud vectorial."
+        },
+        {
+          q: "¿Cuál es la diferencia principal entre rapidez y velocidad?",
+          opts: [
+            "No hay diferencia, significan exactamente lo mismo",
+            "La rapidez incluye dirección; la velocidad no",
+            "La velocidad incluye rapidez, dirección y sentido",
+            "La rapidez se mide en kg y la velocidad en m/s"
+          ],
+          ans: 2,
+          tag: "Rapidez vs Velocidad",
+          exp: "La rapidez es un escalar (cuán rápido va algo), mientras que la velocidad es un vector completo con dirección."
+        },
+        {
+          q: "Si vas sentado en un autobús en movimiento, ¿estás en reposo o en movimiento?",
+          opts: [
+            "Siempre en movimiento absoluto",
+            "Siempre en reposo absoluto",
+            "En reposo respecto al asiento; en movimiento respecto a la banqueta",
+            "Es una contradicción imposible de explicar"
+          ],
+          ans: 2,
+          tag: "Marco de Referencia",
+          exp: "El estado de movimiento depende del marco de referencia desde el cual se observe."
+        },
+        {
+          q: "¿Qué es un sistema físico en el estudio de choques e interacciones?",
+          opts: [
+            "Únicamente el objeto que se mueve más rápido",
+            "El conjunto de objetos que elegimos analizar en una interacción",
+            "La fuerza externa que detiene un objeto",
+            "El cronómetro utilizado para medir tiempo"
+          ],
+          ans: 1,
+          tag: "Sistema Físico",
+          exp: "Un sistema es la porción delimitada de objetos que elegimos estudiar para analizar sus interacciones."
+        },
+        {
+          q: "¿Qué establece el principio de conservación del momento lineal en un sistema aislado?",
+          opts: [
+            "El momento lineal de cada objeto individual jamás cambia",
+            "El momento lineal total antes del choque es igual al momento lineal total después",
+            "Toda la velocidad se destruye en el choque",
+            "La masa total desaparece después del impacto"
+          ],
+          ans: 1,
+          tag: "Conservación del Momento",
+          exp: "En ausencia de fuerzas externas netas, el momento lineal total del sistema se mantiene constante."
+        },
+        {
+          q: "¿Cómo se define el Impulso (J) recibido por un objeto?",
+          opts: ["J = m · v", "J = F · Δt", "J = F / m", "J = m / Δt"],
+          ans: 1,
+          tag: "Concepto de Impulso",
+          exp: "El impulso es el producto de la fuerza aplicada por el intervalo de tiempo durante el cual actúa (J = F·Δt)."
+        },
+        {
+          q: "¿Cuál es la relación entre el Impulso (J) y el Momento Lineal (p)?",
+          opts: [
+            "El impulso es igual al cambio en el momento lineal (J = Δp)",
+            "El impulso destruye la masa",
+            "El impulso siempre es igual a cero",
+            "No tienen ninguna relación física"
+          ],
+          ans: 0,
+          tag: "Teorema Impulso-Momento",
+          exp: "El impulso aplicado a un objeto produce un cambio directamente igual en su momento lineal (J = Δp)."
+        },
+        {
+          q: "¿Por qué las bolsas de aire y cascos reducen el riesgo de lesiones severas?",
+          opts: [
+            "Aumentan la fuerza del impacto",
+            "Reducen el tiempo de impacto a cero",
+            "Aumentan el tiempo de interacción, reduciendo la fuerza promedio ejercida",
+            "Eliminan totalmente la masa de la persona"
+          ],
+          ans: 2,
+          tag: "Aplicación y Seguridad Vial",
+          exp: "Al extender el tiempo durante el cual cambia el momento (Δt mayor), la fuerza promedio disminuye significativamente (F = Δp / Δt)."
+        }
+      ],
+      mapWords: [
+        "momento lineal", "masa", "velocidad", "dirección",
+        "sentido", "marco de referencia", "sistema", "conservación",
+        "impulso", "fuerza", "tiempo", "cambio de momento"
+      ],
+      mapCorrect: {
+        "s0": "momento lineal",
+        "s1": "masa",
+        "s2": "velocidad",
+        "s3": "dirección",
+        "s4": "sentido",
+        "s5": "marco de referencia",
+        "s6": "sistema",
+        "s7": "conservación",
+        "s8": "impulso",
+        "s9": "fuerza",
+        "s10": "tiempo",
+        "s11": "cambio de momento"
+      }
+    };
+
+    const state = {
+      user: { name: "", group: "" },
+      step: "START", // START, ENGAGE, EXPLORE, EXPLAIN, ELABORATE, EVALUATE, RESULTS
+      engage: {
+        answer1: null,
+        answered: false
+      },
+      explore: {
+        m: 5,
+        v: 4,
+        pred1: null,
+        pred2: null,
+        pred3: null,
+        busFrameAns: null
+      },
+      explain: {
+        selectedWord: null,
+        slots: {},
+        completed: false
+      },
+      elaborate: {
+        missionA: null,
+        calc1: "",
+        calc2: "",
+        sysChoice: null,
+        pause1Done: false,
+        pause2Done: false
+      },
+      evaluate: {
+        currentQ: 0,
+        answers: Array(10).fill(null),
+        score: 0,
+        completed: false,
+        finalReflection: ""
+      }
+    };
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+
+    function saveProgress() {
+      try {
+        localStorage.setItem('prog3_state', JSON.stringify(state));
+      } catch (e) {
+        // Fallback gracefully if storage is disabled
+      }
+    }
+
+    function loadProgress() {
+      try {
+        const saved = localStorage.getItem('prog3_state');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          Object.assign(state, parsed);
+        }
+      } catch (e) {
+        // Fallback gracefully
+      }
+    }
+
+    function setStep(newStep) {
+      state.step = newStep;
+      saveProgress();
+      renderApp();
+      window.scrollTo(0, 0);
+    }
+
+    function renderHeader() {
+      const tag = document.getElementById('header-user-tag');
+      if (state.user.name) {
+        tag.textContent = `${state.user.name} (${state.user.group})`;
+      } else {
+        tag.textContent = "Sin identificar";
+      }
+
+      const bar = document.getElementById('main-progress-bar');
+      const stepsOrder = ["START", "ENGAGE", "EXPLORE", "EXPLAIN", "ELABORATE", "EVALUATE", "RESULTS"];
+      const currentIdx = stepsOrder.indexOf(state.step);
+      const pct = Math.max(0, Math.min(100, (currentIdx / 6) * 100));
+      bar.style.width = pct + "%";
+
+      for (let i = 0; i <= 5; i++) {
+        const el = document.getElementById(`ind-${i}`);
+        if (el) {
+          if (i === currentIdx) {
+            el.className = "active";
+          } else {
+            el.className = "";
+          }
+        }
+      }
+    }
+
+    function renderApp() {
+      renderHeader();
+      const container = document.getElementById('app-content');
+      container.innerHTML = '';
+
+      switch (state.step) {
+        case 'START':
+          renderStepStart(container);
+          break;
+        case 'ENGAGE':
+          renderStepEngage(container);
+          break;
+        case 'EXPLORE':
+          renderStepExplore(container);
+          break;
+        case 'EXPLAIN':
+          renderStepExplain(container);
+          break;
+        case 'ELABORATE':
+          renderStepElaborate(container);
+          break;
+        case 'EVALUATE':
+          renderStepEvaluate(container);
+          break;
+        case 'RESULTS':
+          renderStepResults(container);
+          break;
+        default:
+          renderStepStart(container);
+      }
+    }
+
+    function renderStepStart(container) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div style="text-align:center; margin-bottom:16px;">
+          <span style="font-size: 2.5rem;">⚡</span>
+          <h1 style="font-size:1.3rem; color:var(--primary-dark); margin-top:6px;">LA ENERGÍA EN LOS PROCESOS DE LA VIDA DIARIA</h1>
+          <div style="font-size:0.9rem; font-weight:800; color:var(--secondary); margin-top:4px;">PROGRESIÓN DE APRENDIZAJE 3</div>
+          <h2 style="font-size:1.1rem; color:var(--text-main); margin-top:8px;">Momento Lineal y Cantidad de Movimiento</h2>
+        </div>
+
+        <p style="font-size:0.88rem; color:var(--text-muted); text-align:center; margin-bottom:18px;">
+          Bienvenido(a) a esta experiencia de aprendizaje interactivo. Por favor ingresa tus datos completos para comenzar tu registro de evidencia.
+        </p>
+
+        <form id="start-form">
+          <div class="input-group">
+            <label class="input-label" for="user-name">NOMBRE COMPLETO:</label>
+            <input type="text" id="user-name" class="input-control" placeholder="Ej. Ana Sofía López Pérez" value="${escapeHtml(state.user.name)}" required>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label" for="user-group">GRUPO / GRADO:</label>
+            <input type="text" id="user-group" class="input-control" placeholder="Ej. 2º B" value="${escapeHtml(state.user.group)}" required>
+          </div>
+
+          <div id="start-error" class="feedback-box error hidden">
+            ⚠️ Por favor ingresa tanto tu nombre como tu grupo para continuar.
+          </div>
+
+          <button type="submit" class="btn btn-accent" style="margin-top:14px;">
+            🚀 COMENZAR MI RECORRIDO
+          </button>
+        </form>
+      `;
+
+      container.appendChild(card);
+
+      const form = card.querySelector('#start-form');
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const nameVal = card.querySelector('#user-name').value.trim();
+        const groupVal = card.querySelector('#user-group').value.trim();
+        const errBox = card.querySelector('#start-error');
+
+        if (!nameVal || !groupVal) {
+          errBox.classList.remove('hidden');
+          return;
+        }
+
+        state.user.name = nameVal;
+        state.user.group = groupVal;
+        setStep('ENGAGE');
+      });
+    }
+
+    function renderStepEngage(container) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="card-title">
+          <span>🎯</span> 1. ENGANCHAR: El Reto de Detener el Movimiento
+        </div>
+
+        <p>Imagina las siguientes dos situaciones cotidianas ocurriendo al mismo tiempo:</p>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0;">
+          <div style="background:#eff6ff; border:1px solid #bfdbfe; padding:10px; border-radius:8px; text-align:center;">
+            <div style="font-size:2rem;">⚽</div>
+            <div style="font-size:0.85rem; font-weight:800; color:var(--primary-dark);">Pelota Ligera</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">Masa muy pequeña<br>Moviéndose muy RÁPIDO</div>
+          </div>
+          <div style="background:#fef3c7; border:1px solid #fde68a; padding:10px; border-radius:8px; text-align:center;">
+            <div style="font-size:2rem;">🎒</div>
+            <div style="font-size:0.85rem; font-weight:800; color:#92400e;">Mochila Pesada</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">Masa muy grande<br>Moviéndose LENTO</div>
+          </div>
+        </div>
+
+        <div class="card-subtitle">Pregunta de Reflexión Inicial:</div>
+        <p><strong>Si ambas vienen hacia ti, ¿cuál de los dos objetos sería más difícil de detener?</strong></p>
+
+        <div class="quiz-option ${state.engage.answer1 === 'pelota' ? 'selected' : ''}" data-val="pelota">
+          <span>⚽ La pelota ligera, porque su rapidez es muy alta.</span>
+        </div>
+        <div class="quiz-option ${state.engage.answer1 === 'mochila' ? 'selected' : ''}" data-val="mochila">
+          <span>🎒 La mochila pesada, porque tiene mucha masa.</span>
+        </div>
+        <div class="quiz-option ${state.engage.answer1 === 'ambas' ? 'selected' : ''}" data-val="ambas">
+          <span>⚖️ Ambas podrían ser igual de difíciles de detener, pues depende de la combinación de MASA y VELOCIDAD.</span>
+        </div>
+
+        <div id="engage-feedback" class="feedback-box ${state.engage.answered ? 'success' : 'hidden'}">
+          ${state.engage.answered ? `
+            ✅ <strong>¡Exacto!</strong> Para evaluar qué tan difícil es detener o cambiar el movimiento de un cuerpo, <strong>no basta conocer solo la rapidez</strong> ni solo la masa. La física combina ambas magnitudes en un concepto llamado <strong>Momento Lineal (p = m · v)</strong>.
+          ` : ''}
+        </div>
+
+        <button id="btn-engage-next" class="btn ${state.engage.answered ? '' : 'btn-disabled'}" style="margin-top:16px;">
+          CONTINUAR A EXPLORAR ➔
+        </button>
+      `;
+
+      container.appendChild(card);
+
+      const options = card.querySelectorAll('.quiz-option');
+      const fb = card.querySelector('#engage-feedback');
+      const btnNext = card.querySelector('#btn-engage-next');
+
+      options.forEach(opt => {
+        opt.addEventListener('click', () => {
+          const val = opt.getAttribute('data-val');
+          state.engage.answer1 = val;
+          state.engage.answered = true;
+          saveProgress();
+
+          options.forEach(o => o.classList.remove('selected'));
+          opt.classList.add('selected');
+
+          fb.className = "feedback-box success";
+          fb.innerHTML = `
+            ✅ <strong>¡Excelente deducción!</strong> Para saber qué tan difícil es frenar un objeto, <strong>no basta con mirar únicamente la rapidez</strong>. Debemos considerar conjuntamente la <strong>MASA</strong> y la <strong>VELOCIDAD</strong>.<br><br>
+            A este producto físico se le llama <strong>MOMENTO LINEAL</strong> o <em>Cantidad de Movimiento</em>:
+            <div style="text-align:center; font-size:1.1rem; font-weight:800; margin-top:6px; color:var(--primary-dark);">p = m · v</div>
+          `;
+          fb.classList.remove('hidden');
+          btnNext.classList.remove('btn-disabled');
+        });
+      });
+
+      btnNext.addEventListener('click', () => {
+        if (state.engage.answered) {
+          setStep('EXPLORE');
+        }
+      });
+    }
+
+    function renderStepExplore(container) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="card-title">
+          <span>🔬</span> 2. EXPLORAR: Laboratorio de Momento Lineal
+        </div>
+        <p>Ajusta la masa y la velocidad del carrito interactivo para observar cómo cambia el vector momento lineal <strong>p = m · v</strong>.</p>
+
+        <!-- CONTROLES -->
+        <div class="controls-panel">
+          <div class="slider-row">
+            <label for="slider-m">Masa (m):</label>
+            <input type="range" id="slider-m" min="1" max="10" step="1" value="${state.explore.m}">
+            <span class="val-badge" id="val-m">${state.explore.m} kg</span>
+          </div>
+
+          <div class="slider-row">
+            <label for="slider-v">Velocidad (v):</label>
+            <input type="range" id="slider-v" min="-10" max="10" step="1" value="${state.explore.v}">
+            <span class="val-badge" id="val-v">${state.explore.v} m/s</span>
+          </div>
+        </div>
+
+        <!-- SIMULADOR CANVAS -->
+        <div class="sim-canvas-container">
+          <canvas id="sim-canvas"></canvas>
+        </div>
+
+        <!-- LECTURA DEL CALCULADOR -->
+        <div style="background:#e2e8f0; padding:10px; border-radius:8px; text-align:center; margin-bottom:16px;">
+          <div style="font-size:0.8rem; font-weight:700; color:var(--text-muted);">CÁLCULO DEL MOMENTO LINEAL:</div>
+          <div style="font-size:1.15rem; font-weight:900; color:var(--primary-dark);" id="calc-display">
+            p = ${state.explore.m} kg × ${state.explore.v} m/s = ${(state.explore.m * state.explore.v)} kg·m/s
+          </div>
+        </div>
+
+        <!-- ACTIVIDAD DE PRELICCIÓN -->
+        <div class="card-subtitle">🎯 Retos de Predicción:</div>
+
+        <div style="background:#f8fafc; border:1px solid var(--border); padding:12px; border-radius:8px; margin-bottom:12px;">
+          <p style="font-weight:700; font-size:0.88rem; margin-bottom:6px;">
+            1. Si m = 2 kg y v = 4 m/s, ¿cuál es el momento lineal?
+          </p>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-outline pred-btn-1 ${state.explore.pred1 === 8 ? 'btn-accent' : ''}" data-val="8" style="min-height:38px; font-size:0.85rem;">8 kg·m/s</button>
+            <button class="btn btn-outline pred-btn-1 ${state.explore.pred1 === 6 ? 'btn-accent' : ''}" data-val="6" style="min-height:38px; font-size:0.85rem;">6 kg·m/s</button>
+            <button class="btn btn-outline pred-btn-1 ${state.explore.pred1 === 2 ? 'btn-accent' : ''}" data-val="2" style="min-height:38px; font-size:0.85rem;">2 kg·m/s</button>
+          </div>
+          <div id="pred1-fb" class="feedback-box ${state.explore.pred1 !== null ? (state.explore.pred1 === 8 ? 'success' : 'error') : 'hidden'}" style="margin-top:6px; padding:6px 10px; font-size:0.8rem;">
+            ${state.explore.pred1 === 8 ? '✅ Correcto: p = 2 kg × 4 m/s = 8 kg·m/s' : '❌ Incorrecto. Recuerda multiplicar masa por velocidad (2 × 4).'}
+          </div>
+        </div>
+
+        <div style="background:#f8fafc; border:1px solid var(--border); padding:12px; border-radius:8px; margin-bottom:12px;">
+          <p style="font-weight:700; font-size:0.88rem; margin-bottom:6px;">
+            2. Si m = 3 kg y v = -4 m/s (hacia la izquierda), ¿cuál es el momento?
+          </p>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-outline pred-btn-2 ${state.explore.pred2 === -12 ? 'btn-accent' : ''}" data-val="-12" style="min-height:38px; font-size:0.85rem;">-12 kg·m/s</button>
+            <button class="btn btn-outline pred-btn-2 ${state.explore.pred2 === 12 ? 'btn-accent' : ''}" data-val="12" style="min-height:38px; font-size:0.85rem;">+12 kg·m/s</button>
+            <button class="btn btn-outline pred-btn-2 ${state.explore.pred2 === -7 ? 'btn-accent' : ''}" data-val="-7" style="min-height:38px; font-size:0.85rem;">-7 kg·m/s</button>
+          </div>
+          <div id="pred2-fb" class="feedback-box ${state.explore.pred2 !== null ? (state.explore.pred2 === -12 ? 'success' : 'error') : 'hidden'}" style="margin-top:6px; padding:6px 10px; font-size:0.8rem;">
+            ${state.explore.pred2 === -12 ? '✅ ¡Excelente! El signo negativo indica que el vector apunta hacia la izquierda.' : '❌ El signo es importante. 3 × (-4) = -12 kg·m/s.'}
+          </div>
+        </div>
+
+        <!-- SECCIÓN MARCO DE REFERENCIA CON SVG -->
+        <div style="border-top:2px dashed var(--border); padding-top:14px; margin-top:16px;">
+          <div class="card-subtitle">🚌 Marco de Referencia: ¿Reposo o Movimiento?</div>
+          <p style="font-size:0.88rem;">
+            Imagina que estás sentado dentro de un autobús escolar en marcha por la carretera:
+          </p>
+
+          <!-- SVG ILUSTRACIÓN AUTOBÚS -->
+          <div style="text-align:center; margin:10px 0;">
+            <svg width="100%" height="110" viewBox="0 0 320 110" style="background:#e0f2fe; border-radius:8px;">
+              <!-- Banqueta / Carretera -->
+              <rect x="0" y="85" width="320" height="25" fill="#94a3b8" />
+              <line x1="0" y1="97" x2="320" y2="97" stroke="#ffffff" stroke-width="2" stroke-dasharray="10 10" />
+              <!-- Autobús -->
+              <rect x="70" y="25" width="180" height="50" rx="8" fill="#f59e0b" stroke="#d97706" stroke-width="2" />
+              <!-- Ventanas -->
+              <rect x="85" y="32" width="30" height="20" fill="#bae6fd" rx="2" />
+              <rect x="125" y="32" width="30" height="20" fill="#bae6fd" rx="2" />
+              <rect x="165" y="32" width="30" height="20" fill="#bae6fd" rx="2" />
+              <rect x="205" y="32" width="30" height="20" fill="#bae6fd" rx="2" />
+              <!-- Pasajero en autobús -->
+              <circle cx="140" cy="40" r="5" fill="#1e293b" />
+              <path d="M 135 50 Q 140 44 145 50" stroke="#1e293b" stroke-width="2" fill="none" />
+              <!-- Ruedas -->
+              <circle cx="100" cy="75" r="10" fill="#334155" />
+              <circle cx="100" cy="75" r="4" fill="#cbd5e1" />
+              <circle cx="220" cy="75" r="10" fill="#334155" />
+              <circle cx="220" cy="75" r="4" fill="#cbd5e1" />
+              <!-- Observador en la banqueta -->
+              <circle cx="30" cy="65" r="5" fill="#0284c7" />
+              <line x1="30" y1="70" x2="30" y2="82" stroke="#0284c7" stroke-width="2" />
+              <!-- Flecha movimiento autobús -->
+              <path d="M 260 45 L 290 45 M 282 40 L 290 45 L 282 50" stroke="#dc2626" stroke-width="3" fill="none" />
+            </svg>
+          </div>
+
+          <p style="font-size:0.85rem; font-weight:700;">Respecto al ASIENTO DEL AUTOBÚS, tú estás en:</p>
+          <div style="display:flex; gap:8px; margin-bottom:10px;">
+            <button class="btn btn-outline btn-bus" data-val="reposo" style="min-height:38px; font-size:0.85rem;">Reposo (0 m/s)</button>
+            <button class="btn btn-outline btn-bus" data-val="movimiento" style="min-height:38px; font-size:0.85rem;">En Movimiento</button>
+          </div>
+
+          <div id="bus-fb" class="feedback-box hidden" style="padding:8px 12px; font-size:0.85rem;"></div>
+        </div>
+
+        <button id="btn-explore-next" class="btn style="margin-top:16px;">
+          CONTINUAR A EXPLICAR ➔
+        </button>
+      `;
+
+      container.appendChild(card);
+
+      // Canvas setup
+      const canvas = card.querySelector('#sim-canvas');
+      const ctx = canvas.getContext('2d');
+      let animId = null;
+      let posX = 160;
+
+      function resizeCanvas() {
+        canvas.width = canvas.parentElement.clientWidth;
+        canvas.height = 180;
+      }
+      resizeCanvas();
+
+      function drawSim() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // Ground line
+        ctx.strokeStyle = "#475569";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(0, 140);
+        ctx.lineTo(canvas.width, 140);
+        ctx.stroke();
+
+        // Update position based on velocity
+        posX += state.explore.v * 0.15;
+        if (posX > canvas.width + 40) posX = -40;
+        if (posX < -40) posX = canvas.width + 40;
+
+        // Draw Cart
+        const cartWidth = 30 + state.explore.m * 4;
+        const cartHeight = 28;
+        const cartY = 140 - cartHeight;
+
+        ctx.fillStyle = "#2563eb";
+        ctx.beginPath();
+        ctx.roundRect(posX - cartWidth/2, cartY, cartWidth, cartHeight, 6);
+        ctx.fill();
+
+        // Wheels
+        ctx.fillStyle = "#0f172a";
+        ctx.beginPath();
+        ctx.arc(posX - cartWidth/3, 140, 6, 0, Math.PI * 2);
+        ctx.arc(posX + cartWidth/3, 140, 6, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Cart label (Mass)
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 12px sans-serif";
+        ctx.textAlign = "center";
+        ctx.fillText(`${state.explore.m} kg`, posX, cartY + 18);
+
+        // Draw Momentum Vector Arrow
+        const pVal = state.explore.m * state.explore.v;
+        if (pVal !== 0) {
+          const arrowLength = Math.min(100, Math.abs(pVal) * 2.5);
+          const arrowY = cartY - 20;
+          const startX = posX;
+          const endX = pVal > 0 ? posX + arrowLength : posX - arrowLength;
+
+          ctx.strokeStyle = "#f59e0b";
+          ctx.lineWidth = 4;
+          ctx.beginPath();
+          ctx.moveTo(startX, arrowY);
+          ctx.lineTo(endX, arrowY);
+          ctx.stroke();
+
+          // Arrow head
+          ctx.fillStyle = "#f59e0b";
+          ctx.beginPath();
+          if (pVal > 0) {
+            ctx.moveTo(endX, arrowY - 6);
+            ctx.lineTo(endX + 8, arrowY);
+            ctx.lineTo(endX, arrowY + 6);
+          } else {
+            ctx.moveTo(endX, arrowY - 6);
+            ctx.lineTo(endX - 8, arrowY);
+            ctx.lineTo(endX, arrowY + 6);
+          }
+          ctx.fill();
+
+          // Vector Text
+          ctx.fillStyle = "#f59e0b";
+          ctx.font = "bold 13px sans-serif";
+          ctx.fillText(`p = ${pVal} kg·m/s`, posX, arrowY - 10);
+        } else {
+          ctx.fillStyle = "#94a3b8";
+          ctx.font = "bold 12px sans-serif";
+          ctx.fillText("p = 0 (Sin momento)", posX, cartY - 15);
+        }
+
+        animId = requestAnimationFrame(drawSim);
+      }
+
+      drawSim();
+
+      // Controls handlers
+      const sliderM = card.querySelector('#slider-m');
+      const sliderV = card.querySelector('#slider-v');
+      const valM = card.querySelector('#val-m');
+      const valV = card.querySelector('#val-v');
+      const calcDisplay = card.querySelector('#calc-display');
+
+      function updateControls() {
+        state.explore.m = parseInt(sliderM.value, 10);
+        state.explore.v = parseInt(sliderV.value, 10);
+        valM.textContent = `${state.explore.m} kg`;
+        valV.textContent = `${state.explore.v} m/s`;
+        const p = state.explore.m * state.explore.v;
+        calcDisplay.textContent = `p = ${state.explore.m} kg × ${state.explore.v} m/s = ${p} kg·m/s`;
+        saveProgress();
+      }
+
+      sliderM.addEventListener('input', updateControls);
+      sliderV.addEventListener('input', updateControls);
+
+      // Prediction buttons
+      card.querySelectorAll('.pred-btn-1').forEach(b => {
+        b.addEventListener('click', () => {
+          const val = parseInt(b.getAttribute('data-val'), 10);
+          state.explore.pred1 = val;
+          saveProgress();
+          card.querySelectorAll('.pred-btn-1').forEach(btn => btn.classList.remove('btn-accent'));
+          b.classList.add('btn-accent');
+          const fb = card.querySelector('#pred1-fb');
+          if (val === 8) {
+            fb.className = "feedback-box success";
+            fb.innerHTML = "✅ ¡Correcto! p = 2 kg × 4 m/s = 8 kg·m/s.";
+          } else {
+            fb.className = "feedback-box error";
+            fb.innerHTML = "❌ Revisa la multiplicación: p = m · v = 2 × 4.";
+          }
+          fb.classList.remove('hidden');
+        });
+      });
+
+      card.querySelectorAll('.pred-btn-2').forEach(b => {
+        b.addEventListener('click', () => {
+          const val = parseInt(b.getAttribute('data-val'), 10);
+          state.explore.pred2 = val;
+          saveProgress();
+          card.querySelectorAll('.pred-btn-2').forEach(btn => btn.classList.remove('btn-accent'));
+          b.classList.add('btn-accent');
+          const fb = card.querySelector('#pred2-fb');
+          if (val === -12) {
+            fb.className = "feedback-box success";
+            fb.innerHTML = "✅ ¡Exacto! El signo negativo indica sentido hacia la izquierda (-12 kg·m/s).";
+          } else {
+            fb.className = "feedback-box error";
+            fb.innerHTML = "❌ Recuerda multiplicar incluyendo el signo: 3 × (-4) = -12 kg·m/s.";
+          }
+          fb.classList.remove('hidden');
+        });
+      });
+
+      // Bus frame choices
+      card.querySelectorAll('.btn-bus').forEach(b => {
+        b.addEventListener('click', () => {
+          const val = b.getAttribute('data-val');
+          state.explore.busFrameAns = val;
+          saveProgress();
+          const fb = card.querySelector('#bus-fb');
+          if (val === 'reposo') {
+            fb.className = "feedback-box success";
+            fb.innerHTML = "✅ <strong>¡Correcto!</strong> Respecto al autobús estás en reposo (0 m/s). Pero respecto a una persona parada en la banqueta, te mueves junto con el vehículo. ¡Por eso siempre debemos especificar el <strong>marco de referencia</strong>!";
+          } else {
+            fb.className = "feedback-box warning";
+            fb.innerHTML = "⚠️ Si miras únicamente el asiento en el que estás sentado, tu distancia hacia él no cambia. Por tanto, respecto al autobús estás en reposo.";
+          }
+          fb.classList.remove('hidden');
+        });
+      });
+
+      card.querySelector('#btn-explore-next').addEventListener('click', () => {
+        if (animId) cancelAnimationFrame(animId);
+        setStep('EXPLAIN');
+      });
+    }
+
+    function renderStepExplain(container) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="card-title">
+          <span>📖</span> 3. EXPLICAR: Conceptos Clave y Mapa Conceptual
+        </div>
+
+        <!-- MICROLECTURAS INTERACTIVAS -->
+        <div style="background:#f8fafc; border:1px solid var(--border); padding:14px; border-radius:8px; margin-bottom:16px;">
+          <h3 style="font-size:0.95rem; color:var(--primary-dark); margin-bottom:6px;">1. Momento Lineal y Vectorial</h3>
+          <p style="font-size:0.88rem;">
+            El <strong>momento lineal</strong> (o cantidad de movimiento) es la magnitud física que une la masa y la velocidad de un cuerpo: <strong>p = m · v</strong>. Puesto que depende de la velocidad, el momento lineal posee <em>magnitud, dirección y sentido</em>.
+          </p>
+
+          <h3 style="font-size:0.95rem; color:var(--primary-dark); margin-bottom:6px; margin-top:10px;">2. Sistema Físico y Conservación</h3>
+          <p style="font-size:0.88rem;">
+            Un <strong>sistema físico</strong> es la porción de objetos que decidimos estudiar (por ejemplo, dos carritos que chocan). Si no actúan fuerzas externas importantes, el <strong>momento lineal total del sistema se conserva</strong> antes y después de una interacción.
+          </p>
+
+          <h3 style="font-size:0.95rem; color:var(--primary-dark); margin-bottom:6px; margin-top:10px;">3. Impulso y Cambio de Momento</h3>
+          <p style="font-size:0.88rem;">
+            El <strong>Impulso (J)</strong> es el resultado de aplicar una fuerza durante un intervalo de tiempo: <strong>J = F · Δt</strong>. El teorema del impulso establece que <strong>J = Δp</strong> (el impulso aplicado es exactamente igual al cambio en el momento lineal).
+          </p>
+        </div>
+
+        <!-- ACTIVIDAD MAPA CONCEPTUAL -->
+        <div class="card-subtitle">🗺️ Mapa Conceptual Interactivo</div>
+        <p style="font-size:0.85rem; color:var(--text-muted); margin-bottom:10px;">
+          Toca una palabra del banco superior y luego toca el recuadro delimitado [ ___ ] donde corresponda.
+        </p>
+
+        <!-- BANCO DE PALABRAS -->
+        <div class="word-bank" id="map-word-bank"></div>
+
+        <!-- ESQUEMA DEL MAPA CONCEPTUAL -->
+        <div class="map-grid">
+          <div class="map-node">
+            1. El <span class="drop-slot" data-slot="s0">[ ___ ]</span> o cantidad de movimiento.
+          </div>
+          <div class="map-node">
+            2. Se calcula multiplicando la <span class="drop-slot" data-slot="s1">[ ___ ]</span> por la <span class="drop-slot" data-slot="s2">[ ___ ]</span>.
+          </div>
+          <div class="map-node">
+            3. La velocidad indica rapidez, <span class="drop-slot" data-slot="s3">[ ___ ]</span> y <span class="drop-slot" data-slot="s4">[ ___ ]</span>.
+          </div>
+          <div class="map-node">
+            4. El movimiento se describe desde un <span class="drop-slot" data-slot="s5">[ ___ ]</span> particular.
+          </div>
+          <div class="map-node">
+            5. Para analizar choques definimos un <span class="drop-slot" data-slot="s6">[ ___ ]</span> físico.
+          </div>
+          <div class="map-node">
+            6. En un sistema aislado se observa la <span class="drop-slot" data-slot="s7">[ ___ ]</span> del momento total.
+          </div>
+          <div class="map-node">
+            7. Una fuerza durante un tiempo genera un <span class="drop-slot" data-slot="s8">[ ___ ]</span> (J = <span class="drop-slot" data-slot="s9">[ ___ ]</span> · <span class="drop-slot" data-slot="s10">[ ___ ]</span>).
+          </div>
+          <div class="map-node">
+            8. El impulso produce un <span class="drop-slot" data-slot="s11">[ ___ ]</span> lineal en el cuerpo.
+          </div>
+        </div>
+
+        <div id="map-feedback" class="feedback-box hidden"></div>
+
+        <div style="display:flex; gap:10px; margin-top:16px;">
+          <button id="btn-check-map" class="btn btn-accent">
+            COMPROBAR MAPA CONCEPTUAL
+          </button>
+        </div>
+
+        <button id="btn-explain-next" class="btn ${state.explain.completed ? '' : 'btn-disabled'}" style="margin-top:12px;">
+          CONTINUAR A ELABORAR ➔
+        </button>
+      `;
+
+      container.appendChild(card);
+
+      const bankContainer = card.querySelector('#map-word-bank');
+      const slots = card.querySelectorAll('.drop-slot');
+      const mapFb = card.querySelector('#map-feedback');
+
+      function renderBank() {
+        bankContainer.innerHTML = '';
+        DATA.mapWords.forEach(word => {
+          // Check if word is already placed in any slot
+          const isPlaced = Object.values(state.explain.slots).includes(word);
+          if (!isPlaced) {
+            const chip = document.createElement('div');
+            chip.className = `word-chip ${state.explain.selectedWord === word ? 'selected' : ''}`;
+            chip.textContent = word;
+            chip.addEventListener('click', () => {
+              if (state.explain.selectedWord === word) {
+                state.explain.selectedWord = null;
+              } else {
+                state.explain.selectedWord = word;
+              }
+              renderBank();
+            });
+            bankContainer.appendChild(chip);
+          }
+        });
+      }
+
+      function updateSlotsDisplay() {
+        slots.forEach(slot => {
+          const sId = slot.getAttribute('data-slot');
+          const val = state.explain.slots[sId];
+          if (val) {
+            slot.textContent = val;
+            slot.classList.add('filled');
+          } else {
+            slot.textContent = "[ ___ ]";
+            slot.classList.remove('filled', 'correct', 'incorrect');
+          }
+        });
+      }
+
+      slots.forEach(slot => {
+        slot.addEventListener('click', () => {
+          const sId = slot.getAttribute('data-slot');
+          if (state.explain.selectedWord) {
+            // Place selected word into slot
+            state.explain.slots[sId] = state.explain.selectedWord;
+            state.explain.selectedWord = null;
+            saveProgress();
+            renderBank();
+            updateSlotsDisplay();
+          } else if (state.explain.slots[sId]) {
+            // Remove word from slot back to bank
+            delete state.explain.slots[sId];
+            saveProgress();
+            renderBank();
+            updateSlotsDisplay();
+          }
+        });
+      });
+
+      renderBank();
+      updateSlotsDisplay();
+
+      card.querySelector('#btn-check-map').addEventListener('click', () => {
+        const totalSlots = Object.keys(DATA.mapCorrect).length;
+        const filledSlots = Object.keys(state.explain.slots).length;
+
+        if (filledSlots < totalSlots) {
+          mapFb.className = "feedback-box warning";
+          mapFb.innerHTML = `⚠️ Te falta completar ${totalSlots - filledSlots} espacio(s) en el mapa.`;
+          mapFb.classList.remove('hidden');
+          return;
+        }
+
+        let correctCount = 0;
+        slots.forEach(slot => {
+          const sId = slot.getAttribute('data-slot');
+          const userVal = state.explain.slots[sId];
+          const correctVal = DATA.mapCorrect[sId];
+
+          if (userVal === correctVal) {
+            slot.classList.add('correct');
+            slot.classList.remove('incorrect');
+            correctCount++;
+          } else {
+            slot.classList.add('incorrect');
+            slot.classList.remove('correct');
+          }
+        });
+
+        if (correctCount === totalSlots) {
+          mapFb.className = "feedback-box success";
+          mapFb.innerHTML = "✅ <strong>¡Felicidades!</strong> Has completado correctamente todas las relaciones conceptuales.";
+          state.explain.completed = true;
+          saveProgress();
+          card.querySelector('#btn-explain-next').classList.remove('btn-disabled');
+        } else {
+          mapFb.className = "feedback-box error";
+          mapFb.innerHTML = `⚠️ Tienes ${correctCount} de ${totalSlots} respuestas correctas. Revisa los recuadros marcados en rojo, tócalos para quitarlos e inténtalo nuevamente.`;
+        }
+        mapFb.classList.remove('hidden');
+      });
+
+      card.querySelector('#btn-explain-next').addEventListener('click', () => {
+        if (state.explain.completed) {
+          setStep('ELABORATE');
+        }
+      });
+    }
+
+    function renderStepElaborate(container) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="card-title">
+          <span>🛠️</span> 4. ELABORAR: Micro-Misiones de Aplicación
+        </div>
+
+        <!-- MISIÓN A -->
+        <div style="background:#f8fafc; border:1px solid var(--border); padding:12px; border-radius:8px; margin-bottom:14px;">
+          <div class="card-subtitle" style="margin-bottom:6px;">Misión A: ¿Quién tiene mayor momento lineal?</div>
+          <p style="font-size:0.88rem;">Compara los siguientes dos objetos:</p>
+          <ul style="font-size:0.85rem; margin-left:20px; margin-bottom:10px;">
+            <li><strong>Objeto 1:</strong> Balón de fútbol (m = 0.5 kg, v = 20 m/s)</li>
+            <li><strong>Objeto 2:</strong> Estudiante en bicicleta (m = 60 kg, v = 2 m/s)</li>
+          </ul>
+
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-outline btn-mis-a ${state.elaborate.missionA === 1 ? 'btn-accent' : ''}" data-val="1" style="min-height:38px; font-size:0.8rem;">El Balón (10 kg·m/s)</button>
+            <button class="btn btn-outline btn-mis-a ${state.elaborate.missionA === 2 ? 'btn-accent' : ''}" data-val="2" style="min-height:38px; font-size:0.8rem;">La Bicicleta (120 kg·m/s)</button>
+          </div>
+          <div id="mision-a-fb" class="feedback-box ${state.elaborate.missionA !== null ? (state.elaborate.missionA === 2 ? 'success' : 'error') : 'hidden'}" style="padding:6px 10px; font-size:0.8rem;">
+            ${state.elaborate.missionA === 2 ? '✅ Correcto: La bicicleta tiene 120 kg·m/s frente a los 10 kg·m/s del balón.' : '❌ Revisa el cálculo: Balón (0.5×20 = 10) vs Bicicleta (60×2 = 120).'}
+          </div>
+        </div>
+
+        <!-- PAUSA DOCENTE 1 -->
+        <div class="teacher-pause-card">
+          <div class="teacher-pause-title">
+            <span>🧑‍🏫</span> PAUSA CON TU PROFESOR #1
+          </div>
+          <p style="font-size:0.85rem; color:#713f12; margin-bottom:10px;">
+            Comenten en grupo: ¿Por qué un camión pesado a baja velocidad puede ser tan peligroso en un choque como un auto ligero que viaja muy rápido?
+          </p>
+          <button id="btn-pause-1" class="btn ${state.elaborate.pause1Done ? 'btn-secondary' : 'btn-accent'}" style="min-height:40px; font-size:0.85rem;">
+            ${state.elaborate.pause1Done ? '✅ YA LO COMENTAMOS EN CLASE' : '🗣️ YA LO COMENTAMOS — CONTINUAR'}
+          </button>
+        </div>
+
+        <!-- MISIÓN B: CÁLCULOS SENCILLOS -->
+        <div style="background:#f8fafc; border:1px solid var(--border); padding:12px; border-radius:8px; margin-bottom:14px; margin-top:14px;">
+          <div class="card-subtitle" style="margin-bottom:6px;">Misión B: Calcula p = m · v</div>
+
+          <div style="margin-bottom:10px;">
+            <label class="input-label" style="font-size:0.82rem;">1. Una caja de m = 8 kg se desliza a v = 3 m/s. ¿Momento lineal?</label>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <input type="number" id="calc-in-1" class="input-control" placeholder="Respuesta" value="${escapeHtml(state.elaborate.calc1)}" style="min-height:38px; width:120px;">
+              <span style="font-size:0.85rem; font-weight:700;">kg·m/s</span>
+            </div>
+          </div>
+
+          <div style="margin-bottom:10px;">
+            <label class="input-label" style="font-size:0.82rem;">2. Un auto de m = 1000 kg está detenido en un semáforo (v = 0 m/s). ¿Momento?</label>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <input type="number" id="calc-in-2" class="input-control" placeholder="Respuesta" value="${escapeHtml(state.elaborate.calc2)}" style="min-height:38px; width:120px;">
+              <span style="font-size:0.85rem; font-weight:700;">kg·m/s</span>
+            </div>
+          </div>
+
+          <button id="btn-check-calc" class="btn btn-outline" style="min-height:38px; font-size:0.85rem;">Verificar Cálculos</button>
+          <div id="calc-fb" class="feedback-box hidden" style="padding:6px 10px; font-size:0.8rem;"></div>
+        </div>
+
+        <!-- MISIÓN C: CONSERVACIÓN Y CHOQUES -->
+        <div style="background:#f8fafc; border:1px solid var(--border); padding:12px; border-radius:8px; margin-bottom:14px;">
+          <div class="card-subtitle" style="margin-bottom:6px;">Misión C: Antes, Durante y Después del Choque</div>
+          <p style="font-size:0.85rem;">
+            En una mesa, una canica roja A (p = 5 kg·m/s) choca de frente contra una canica azul B en reposo (p = 0).
+          </p>
+          <div style="background:#ffffff; border:1px solid #cbd5e1; padding:8px; border-radius:6px; font-size:0.8rem; margin-bottom:8px;">
+            📊 <strong>Momento Total ANTES del choque:</strong> 5 + 0 = <strong>5 kg·m/s</strong>
+          </div>
+          <p style="font-size:0.85rem;">
+            Después del choque, la canica A reduce su momento a 2 kg·m/s. Por el principio de conservación, ¿cuánto momento adquirió la canica B?
+          </p>
+          <div style="display:flex; gap:8px;">
+            <button class="btn btn-outline btn-sys" data-val="3" style="min-height:38px; font-size:0.85rem;">3 kg·m/s</button>
+            <button class="btn btn-outline btn-sys" data-val="5" style="min-height:38px; font-size:0.85rem;">5 kg·m/s</button>
+            <button class="btn btn-outline btn-sys" data-val="0" style="min-height:38px; font-size:0.85rem;">0 kg·m/s</button>
+          </div>
+          <div id="sys-fb" class="feedback-box hidden" style="padding:6px 10px; font-size:0.8rem;"></div>
+        </div>
+
+        <!-- PAUSA DOCENTE 2 -->
+        <div class="teacher-pause-card">
+          <div class="teacher-pause-title">
+            <span>🧑‍🏫</span> PAUSA CON TU PROFESOR #2
+          </div>
+          <p style="font-size:0.85rem; color:#713f12; margin-bottom:10px;">
+            Discutan la importancia de los cascos, cinturones de seguridad y bolsas de aire: ¿De qué forma el aumentar el tiempo del impacto (Δt) reduce las lesiones al amortiguar la fuerza (F)?
+          </p>
+          <button id="btn-pause-2" class="btn ${state.elaborate.pause2Done ? 'btn-secondary' : 'btn-accent'}" style="min-height:40px; font-size:0.85rem;">
+            ${state.elaborate.pause2Done ? '✅ YA LO COMENTAMOS EN CLASE' : '🗣️ YA LO COMENTAMOS — CONTINUAR'}
+          </button>
+        </div>
+
+        <button id="btn-elaborate-next" class="btn" style="margin-top:16px;">
+          CONTINUAR A EVALUAR (TEST FINAL) ➔
+        </button>
+      `;
+
+      container.appendChild(card);
+
+      // Misión A handler
+      card.querySelectorAll('.btn-mis-a').forEach(b => {
+        b.addEventListener('click', () => {
+          const val = parseInt(b.getAttribute('data-val'), 10);
+          state.elaborate.missionA = val;
+          saveProgress();
+          card.querySelectorAll('.btn-mis-a').forEach(btn => btn.classList.remove('btn-accent'));
+          b.classList.add('btn-accent');
+          const fb = card.querySelector('#mision-a-fb');
+          if (val === 2) {
+            fb.className = "feedback-box success";
+            fb.innerHTML = "✅ ¡Correcto! Aunque viaje despacio, la gran masa de la bicicleta le otorga un momento lineal de 120 kg·m/s.";
+          } else {
+            fb.className = "feedback-box error";
+            fb.innerHTML = "❌ Revisa la multiplicación: Balón (0.5×20 = 10) vs Bicicleta (60×2 = 120).";
+          }
+          fb.classList.remove('hidden');
+        });
+      });
+
+      // Pause 1
+      card.querySelector('#btn-pause-1').addEventListener('click', () => {
+        state.elaborate.pause1Done = true;
+        saveProgress();
+        renderApp();
+      });
+
+      // Pause 2
+      card.querySelector('#btn-pause-2').addEventListener('click', () => {
+        state.elaborate.pause2Done = true;
+        saveProgress();
+        renderApp();
+      });
+
+      // Misión B Calc
+      card.querySelector('#btn-check-calc').addEventListener('click', () => {
+        const v1 = card.querySelector('#calc-in-1').value.trim();
+        const v2 = card.querySelector('#calc-in-2').value.trim();
+        state.elaborate.calc1 = v1;
+        state.elaborate.calc2 = v2;
+        saveProgress();
+
+        const fb = card.querySelector('#calc-fb');
+        if (v1 === "24" && v2 === "0") {
+          fb.className = "feedback-box success";
+          fb.innerHTML = "✅ ¡Cálculos impecables! 1) 8×3 = 24 kg·m/s. 2) Todo objeto en reposo (v=0) tiene momento igual a 0.";
+        } else {
+          fb.className = "feedback-box error";
+          fb.innerHTML = "⚠️ Revisa tus resultados: 1) 8 kg × 3 m/s = 24. 2) 1000 kg × 0 m/s = 0.";
+        }
+        fb.classList.remove('hidden');
+      });
+
+      // Misión C
+      card.querySelectorAll('.btn-sys').forEach(b => {
+        b.addEventListener('click', () => {
+          const val = parseInt(b.getAttribute('data-val'), 10);
+          state.elaborate.sysChoice = val;
+          saveProgress();
+          const fb = card.querySelector('#sys-fb');
+          if (val === 3) {
+            fb.className = "feedback-box success";
+            fb.innerHTML = "✅ ¡Correcto! El momento inicial era 5. Si la canica A conserva 2, la canica B adquiere 3 (2 + 3 = 5 kg·m/s). El momento total se conserva.";
+          } else {
+            fb.className = "feedback-box error";
+            fb.innerHTML = "❌ Recuerda que la suma debe ser igual al total inicial (5 kg·m/s): 2 + ? = 5.";
+          }
+          fb.classList.remove('hidden');
+        });
+      });
+
+      card.querySelector('#btn-elaborate-next').addEventListener('click', () => {
+        setStep('EVALUATE');
+      });
+    }
+
+    function renderStepEvaluate(container) {
+      const qIdx = state.evaluate.currentQ;
+      const qData = DATA.quiz[qIdx];
+      const answeredCount = state.evaluate.answers.filter(a => a !== null).length;
+
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="card-title">
+          <span>📝</span> 5. EVALUAR: Evaluación de Conocimientos (${qIdx + 1} / 10)
+        </div>
+
+        <!-- CHIPS DE NAVEGACIÓN -->
+        <div class="quiz-nav-chips">
+          ${DATA.quiz.map((_, idx) => `
+            <div class="quiz-chip ${idx === qIdx ? 'active' : ''} ${state.evaluate.answers[idx] !== null ? 'answered' : ''}" data-idx="${idx}">
+              ${idx + 1}
+            </div>
+          `).join('')}
+        </div>
+
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-bottom:12px;">
+          Respondidas: <strong>${answeredCount} de 10</strong>
+        </p>
+
+        <!-- ENUNCIADO DE LA PREGUNTA -->
+        <div style="font-weight:700; font-size:1rem; margin-bottom:14px; color:var(--text-main);">
+          ${qIdx + 1}. ${qData.q}
+        </div>
+
+        <!-- OPCIONES DE RESPUESTA -->
+        <div class="quiz-options-list">
+          ${qData.opts.map((opt, oIdx) => `
+            <div class="quiz-option ${state.evaluate.answers[qIdx] === oIdx ? 'selected' : ''}" data-oidx="${oIdx}">
+              <span>${['A', 'B', 'C', 'D'][oIdx]}) ${escapeHtml(opt)}</span>
+            </div>
+          `).join('')}
+        </div>
+
+        <div id="quiz-warning" class="feedback-box warning hidden" style="margin-bottom:12px;">
+          ⚠️ Debes responder las 10 preguntas antes de enviar tu evaluación.
+        </div>
+
+        <!-- BOTONES NAVEGACIÓN PREGUNTAS -->
+        <div style="display:flex; gap:10px; margin-top:16px;">
+          <button id="btn-prev-q" class="btn btn-secondary ${qIdx === 0 ? 'btn-disabled' : ''}" style="width:48%;">
+            ◄ ANTERIOR
+          </button>
+          <button id="btn-next-q" class="btn" style="width:48%;">
+            ${qIdx === 9 ? 'FINALIZAR Y VER RESULTADOS' : 'SIGUIENTE ►'}
+          </button>
+        </div>
+      `;
+
+      container.appendChild(card);
+
+      // Chip navigation
+      card.querySelectorAll('.quiz-chip').forEach(chip => {
+        chip.addEventListener('click', () => {
+          const targetIdx = parseInt(chip.getAttribute('data-idx'), 10);
+          state.evaluate.currentQ = targetIdx;
+          saveProgress();
+          renderApp();
+        });
+      });
+
+      // Select option
+      card.querySelectorAll('.quiz-option').forEach(opt => {
+        opt.addEventListener('click', () => {
+          const oIdx = parseInt(opt.getAttribute('data-oidx'), 10);
+          state.evaluate.answers[qIdx] = oIdx;
+          saveProgress();
+          renderApp();
+        });
+      });
+
+      // Prev question
+      card.querySelector('#btn-prev-q').addEventListener('click', () => {
+        if (qIdx > 0) {
+          state.evaluate.currentQ = qIdx - 1;
+          saveProgress();
+          renderApp();
+        }
+      });
+
+      // Next / Submit question
+      card.querySelector('#btn-next-q').addEventListener('click', () => {
+        if (qIdx < 9) {
+          state.evaluate.currentQ = qIdx + 1;
+          saveProgress();
+          renderApp();
+        } else {
+          // Verify all questions answered
+          const unans = state.evaluate.answers.filter(a => a === null).length;
+          if (unans > 0) {
+            card.querySelector('#quiz-warning').classList.remove('hidden');
+          } else {
+            // Calculate final score
+            let score = 0;
+            DATA.quiz.forEach((q, idx) => {
+              if (state.evaluate.answers[idx] === q.ans) {
+                score++;
+              }
+            });
+            state.evaluate.score = score;
+            state.evaluate.completed = true;
+            setStep('RESULTS');
+          }
+        }
+      });
+    }
+
+    function renderStepResults(container) {
+      const card = document.createElement('div');
+      card.className = 'card';
+
+      const score = state.evaluate.score;
+      const pct = (score / 10) * 100;
+
+      let levelText = '';
+      let levelColor = '';
+      if (score === 10) { levelText = 'Excelente — Dominio Total'; levelColor = 'var(--success)'; }
+      else if (score >= 8) { levelText = 'Muy Buen Dominio'; levelColor = 'var(--primary)'; }
+      else if (score >= 7) { levelText = 'Buen Dominio'; levelColor = 'var(--secondary)'; }
+      else if (score >= 6) { levelText = 'En Proceso de Consolidación'; levelColor = 'var(--warning)'; }
+      else { levelText = 'Requiere Reforzamiento'; levelColor = 'var(--error)'; }
+
+      const mastered = [];
+      const reviewNeeded = [];
+      DATA.quiz.forEach((q, idx) => {
+        if (state.evaluate.answers[idx] === q.ans) {
+          mastered.push(q.tag);
+        } else {
+          reviewNeeded.push(q.tag);
+        }
+      });
+
+      card.innerHTML = `
+        <div style="background:var(--primary-light); padding:16px; border-radius:12px; margin-bottom:16px; text-align:center;">
+          <h2 style="color:var(--primary-dark); font-size:1.2rem; margin-bottom:4px;">PROGRESIÓN 3 COMPLETADA 🎉</h2>
+          <p style="font-weight:800; color:var(--text-main); font-size:1.05rem; margin:0;">
+            ${escapeHtml(state.user.name)}
+          </p>
+          <p style="font-size:0.85rem; color:var(--text-muted); margin:0;">
+            Grupo: ${escapeHtml(state.user.group)} | La Energía en los Procesos de la Vida Diaria
+          </p>
+        </div>
+
+        <div style="text-align:center; margin:20px 0;">
+          <div style="font-size:3rem; font-weight:900; color:${levelColor};">
+            ${score} <span style="font-size:1.2rem; color:var(--text-muted);">/ 10</span>
+          </div>
+          <div style="font-size:1.05rem; font-weight:800; color:${levelColor}; margin-top:-4px;">
+            Aprovechamiento: ${pct}% (${levelText})
+          </div>
+        </div>
+
+        <!-- DIAGNÓSTICO -->
+        <div style="background:#f8fafc; border:1px solid var(--border); padding:12px; border-radius:10px; margin-bottom:16px;">
+          <h4 style="color:var(--success); margin-bottom:4px; font-size:0.9rem;">✅ Conceptos Dominados:</h4>
+          <p style="font-size:0.85rem; margin-bottom:10px; color:#14532d;">
+            ${mastered.length > 0 ? mastered.join(' • ') : 'Ninguno en esta ocasión.'}
+          </p>
+
+          <h4 style="color:var(--error); margin-bottom:4px; font-size:0.9rem;">⚠️ Conceptos a Reforzar:</h4>
+          <p style="font-size:0.85rem; margin:0; color:#7f1d1d;">
+            ${reviewNeeded.length > 0 ? reviewNeeded.join(' • ') : '¡Ninguno! Has dominado todos los contenidos.'}
+          </p>
+        </div>
+
+        <!-- MODO REVISIÓN -->
+        <button id="btn-toggle-review" class="btn btn-outline" style="margin-bottom:12px; min-height:42px; font-size:0.9rem;">
+          🔍 REVISAR MIS RESPUESTAS DETALLADAS
+        </button>
+
+        <div id="review-container" class="hidden" style="display:flex; flex-direction:column; gap:10px; margin-bottom:16px;">
+          ${DATA.quiz.map((q, idx) => {
+            const userAns = state.evaluate.answers[idx];
+            const isCorrect = userAns === q.ans;
+            return `
+              <div style="background:${isCorrect ? '#f0fdf4' : '#fef2f2'}; border:1px solid ${isCorrect ? '#bbf7d0' : '#fecaca'}; padding:10px; border-radius:8px;">
+                <p style="font-weight:700; font-size:0.85rem; margin-bottom:4px;">
+                  ${idx + 1}. ${q.q}
+                </p>
+                <p style="font-size:0.82rem; margin-bottom:2px; color:${isCorrect ? '#14532d' : '#7f1d1d'};">
+                  Tu respuesta: ${userAns !== null ? escapeHtml(q.opts[userAns]) : 'Sin responder'} ${isCorrect ? '✅' : '❌'}
+                </p>
+                ${!isCorrect ? `<p style="font-size:0.82rem; font-weight:700; color:#14532d; margin-bottom:2px;">Respuesta correcta: ${escapeHtml(q.opts[q.ans])}</p>` : ''}
+                <p style="font-size:0.78rem; color:var(--text-muted); margin:0;">💡 ${q.exp}</p>
+              </div>
+            `;
+          }).join('')}
+        </div>
+
+        <!-- REFLEXIÓN FINAL -->
+        <div style="margin-top:14px;">
+          <label class="input-label" for="final-reflection">
+            En una frase, ¿qué aprendiste hoy sobre el momento lineal?
+          </label>
+          <input type="text" id="final-reflection" class="input-control" placeholder="Escribe tu conclusión personal aquí..." value="${escapeHtml(state.evaluate.finalReflection)}">
+        </div>
+
+        <div style="background:#fffbe2; border:1px solid #fde68a; padding:12px; border-radius:8px; margin-top:16px; text-align:center;">
+          <p style="font-size:0.85rem; color:#78350f; font-weight:700; margin:0;">
+            📸 Guarda una captura de pantalla de esta ventana o muéstrala directamente a tu profesor como evidencia de tu actividad.
+          </p>
+        </div>
+      `;
+
+      container.appendChild(card);
+
+      const btnToggle = card.querySelector('#btn-toggle-review');
+      const revBox = card.querySelector('#review-container');
+      btnToggle.addEventListener('click', () => {
+        revBox.classList.toggle('hidden');
+      });
+
+      const refInput = card.querySelector('#final-reflection');
+      refInput.addEventListener('input', () => {
+        state.evaluate.finalReflection = refInput.value;
+        saveProgress();
+      });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadProgress();
+      renderApp();
+    });
+  </script>
+</body>
+</html>
